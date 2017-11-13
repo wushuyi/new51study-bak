@@ -1,0 +1,10 @@
+$designWidth: 414;
+
+@function px2rem($px) {
+  //@if $px <= 1 {
+  //  @if $px >= 0 {
+  //    @return 1px;
+  //  }
+  //}
+  @return $px*320/$designWidth/20 + rem;
+}

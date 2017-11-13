@@ -1,0 +1,18 @@
+@import 'libs/hotcss/px2rem.scss';
+
+.wrapper {
+  width: px2rem(414);
+  min-height: 100vh;
+  background: #F6F6F6;
+}
+
+.login-code-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: px2rem(18);
+  color: #000000;
+  span {
+    color: #FF4F00;
+  }
+}
