@@ -15,11 +15,13 @@ class LoginByCode extends Component {
   render() {
     return (
       <div className="wrapper">
-        <div className="login-code-title">免注册进入<span>我要学</span></div>
+        <div className="login-code-title">忘记密码</div>
         <div className="form-wrapper">
           <InputText className='' placeholder="手机号"/>
           <ButtonWithCode placeholder="验证码"/>
-          <Button style={{'marginTop': px2rem(30.0)}}>进入</Button>
+          <InputText type="password" placeholder="密码(请输入6位以上的数字或字母)"/>
+          <InputText type="password" placeholder="确认密码"/>
+          <Button style={{'marginTop': px2rem(30.0)}}>完成</Button>
         </div>
         <div className="is-clearfix link-wapper">
           <Link href='./login-passwd'>

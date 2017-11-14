@@ -31,24 +31,20 @@ const logic = kea({
     ]
   }),
 
-  start: function* () {
-    const {increment} = this.actions;
-    yield put(increment(6))
-    // saga started or component mounted
-    // console.log(this)
-    console.log('run start2', count++);
-  },
+  // start: function* () {
+  //   const {increment} = this.actions;
+  //   yield put(increment(6))
+  //   // saga started or component mounted
+  //   // console.log(this)
+  //   console.log('run start2', count++);
+  // },
 
   takeEvery: ({actions, workers}) => ({
-    [actions.increment]: workers.start
+    [actions.increment]: workers.noop
   }),
 
   workers: {
-    start: function* () {
-      const {decrement, title} = this.actions;
-      // yield call(delay, 5000);
-      console.log('run workers2');
-      yield put(title('hello'));
+    noop: function* () {
     }
   }
 });

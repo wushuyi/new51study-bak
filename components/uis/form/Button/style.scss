@@ -7,5 +7,19 @@
   width: 100%;
   font-size: px2rem(20.0);
   border-radius: px2rem(5.0);
+  outline: none;
+  &:focus:not(:active), &.is-focused:not(:active) {
+    box-shadow: none;
+  }
 }
 
+.button.with-code {
+  position: absolute;
+  top: px2rem(10.0);
+  right: px2rem(10.0);
+  font-size: px2rem(14.0);
+  background: #FF4F00;
+  color: #FFFFFF;
+  width: px2rem(85.0);
+  height: px2rem(34.0);
+}

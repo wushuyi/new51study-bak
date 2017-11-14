@@ -13,23 +13,22 @@ export default class Button extends Component {
     } = this.props;
 
     return (
-      <div>
-        <button
-          {...rest}
-          className={`button ${className || ''}`}
-          onChange={(e) => {
-            if (onChange) {
-              onChange(e.target.value, e);
-            }
-          }}
-          onBlur={(e) => {
-            if (onBlur) {
-              onBlur(e);
-            }
-          }}
-        >{children}</button>
+      <button
+        {...rest}
+        className={`button ${className || ''}`}
+        onChange={(e) => {
+          if (onChange) {
+            onChange(e.target.value, e);
+          }
+        }}
+        onBlur={(e) => {
+          if (onBlur) {
+            onBlur(e);
+          }
+        }}
+      >{children}
         <style jsx>{style}</style>
-      </div>
+      </button>
     );
   }
 }

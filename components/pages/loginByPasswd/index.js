@@ -4,6 +4,7 @@ import style from './style.scss';
 import InputText from 'components/uis/form/InputText';
 import Button from 'components/uis/form/Button';
 import createButtonWithCode from 'components/uis/form/ButtonWithCode';
+import LoginNav from 'components/auth/LoginNav';
 import Link from 'next/link';
 
 import {px2rem} from 'utils';
@@ -15,15 +16,18 @@ class LoginByCode extends Component {
   render() {
     return (
       <div className="wrapper">
-        <div className="login-code-title">免注册进入<span>我要学</span></div>
+        <LoginNav active='dl'/>
         <div className="form-wrapper">
-          <InputText className='' placeholder="手机号"/>
-          <ButtonWithCode placeholder="验证码"/>
-          <Button style={{'marginTop': px2rem(30.0)}}>进入</Button>
+          <InputText placeholder="手机号"/>
+          <InputText type="password" placeholder="密码"/>
+          <Button style={{'marginTop': px2rem(30.0)}}>登录</Button>
         </div>
         <div className="is-clearfix link-wapper">
-          <Link href='./login-passwd'>
-            <a href='./login-passwd' className="is-pulled-right link">密码登录</a>
+          <Link href="./passwd-forget">
+            <a href="./passwd-forget" className="is-pulled-left link">忘记密码?</a>
+          </Link>
+          <Link href="./login-code">
+            <a href="./login-code" className="is-pulled-right link">验证码快捷登录</a>
           </Link>
         </div>
         <style jsx>{style}</style>

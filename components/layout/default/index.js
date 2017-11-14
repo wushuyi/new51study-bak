@@ -5,13 +5,18 @@ import Head from 'next/head';
 
 class Layout extends React.Component {
   static defaultProps = {
-    title: 'title',
+    title: '我要学',
   };
 
   static propTypes = {
     title:
     PropTypes.string
   };
+
+  componentDidMount() {
+    // window.hotcss.init();
+    // window.hotcss.mresize();
+  }
 
   render() {
     let {children, title} = this.props;
@@ -20,12 +25,10 @@ class Layout extends React.Component {
         <Head>
           <title>{title}</title>
           <meta charSet='utf-8'/>
-          <meta name='viewport' content='initial-scale=1.0, width=device-width'/>
-          <script src="/static/hotcss/hotcss414.js"></script>
           <link rel="stylesheet" href="/static/styles/bulma.css"/>
         </Head>
         {children}
-        <script>hotcss.mresize();</script>
+        {/*<script>hotcss.mresize();</script>*/}
       </div>
     );
   }

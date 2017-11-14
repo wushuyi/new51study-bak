@@ -88,12 +88,12 @@ export default function injectSagasIntoClass(Klass, input, output) {
 
       originalGetInitialProps(ctx);
     };
-    const originalComponentDidMount = Klass.prototype.componentDidMount;
-    Klass.prototype.componentDidMount = function () {
+    const originalComponentWillMount = Klass.prototype.componentWillMount;
+    Klass.prototype.componentWillMount = function () {
       const _component = this;
       this._keaSagaBase = _keaSagaBase;
       this._keaRunningSaga = _keaRunningSaga;
-      originalComponentDidMount && originalComponentDidMount.bind(this)();
+      originalComponentWillMount && originalComponentWillMount.bind(this)();
     };
   } else {
     const originalComponentDidMount = Klass.prototype.componentDidMount;
