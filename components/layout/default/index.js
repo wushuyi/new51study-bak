@@ -2,6 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import Head from 'next/head';
+import Router from 'next/router';
+import NProgress from 'libs/nprogress/0.2.0/nprogress';
+
+Router.onRouteChangeStart = (url) => {
+  window.NProgress = NProgress;
+  NProgress.start();
+};
+Router.onRouteChangeComplete = () => NProgress.done();
+Router.onRouteChangeError = () => NProgress.done();
 
 class Layout extends React.Component {
   static defaultProps = {
@@ -26,6 +35,7 @@ class Layout extends React.Component {
           <title>{title}</title>
           <meta charSet='utf-8'/>
           <link rel="stylesheet" href="/static/styles/bulma.css"/>
+          <link rel='stylesheet' type='text/css' href='/static/styles/nprogress.css'/>
         </Head>
         {children}
         {/*<script>hotcss.mresize();</script>*/}

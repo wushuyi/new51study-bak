@@ -23,7 +23,7 @@ export default function injectSagasIntoClass(Klass, input, output) {
     let _keaRunningSaga = null;
 
     const originalGetInitialProps = Klass.getInitialProps;
-    Klass.getInitialProps = function (ctx) {
+    Klass.getInitialProps = async function (ctx) {
       if (DEBUG) {
         console.log('component getInitialProps');
       }
@@ -86,7 +86,7 @@ export default function injectSagasIntoClass(Klass, input, output) {
         _keaRunningSaga = startSaga(createCombinedSaga(sagas, path.join('.')));
       }
 
-      originalGetInitialProps(ctx);
+      await originalGetInitialProps(ctx);
     };
     const originalComponentWillMount = Klass.prototype.componentWillMount;
     Klass.prototype.componentWillMount = function () {

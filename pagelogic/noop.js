@@ -1,5 +1,7 @@
 import {kea} from 'libs/kea';
 import PropTypes from 'prop-types';
+import {delay} from 'redux-saga';
+import {call} from 'redux-saga/effects';
 
 
 const logic = kea({
@@ -26,13 +28,10 @@ const logic = kea({
   //   ]
   // }),
 
-  // start: function* () {
-  //   const {increment} = this.actions;
-  //   yield put(increment(6))
-  //   // saga started or component mounted
-  //   // console.log(this)
-  //   console.log('run start2', count++);
-  // },
+  start: function* () {
+    // yield call(delay, 6000);
+    console.log('ok');
+  },
 
   takeEvery: ({actions, workers}) => ({
     [actions.noop]: workers.noop

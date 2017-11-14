@@ -4,7 +4,7 @@ import Layout from 'components/layout/default';
 import {withRedux} from 'store';
 import logic from 'pagelogic/noop';
 import {connect} from 'libs/kea';
-import {isBrowser} from 'utils';
+import {isBrowser, sleep} from 'utils';
 import LoginByPasswd from 'components/pages/loginByPasswd';
 
 @connect({
@@ -24,6 +24,8 @@ class Index extends React.Component {
 
   static async getInitialProps({isServer, store, req, actions, selectors}) {
     let jquery, props = {};
+    await sleep(3000);
+    console.log('sleep');
     // store.dispatch(logic.actions.increment(2));
     return props;
   }
