@@ -1,15 +1,13 @@
 import {Component} from 'react';
 import PropTypes from 'prop-types';
 import style from './style.scss';
-import InputText from 'components/uis/form/InputText';
+import InputText from 'components/uis/form/InputValue';
 import Button from 'components/uis/form/Button';
-import createButtonWithCode from 'components/uis/form/ButtonWithCode';
+import ButtonWithCode from 'components/uis/form/ButtonWithCode';
 import LoginNav from 'components/auth/LoginNav';
 import Link from 'next/link';
 
 import {px2rem} from 'utils';
-
-const ButtonWithCode = createButtonWithCode('loginByCode');
 
 class LoginByCode extends Component {
 
@@ -19,7 +17,7 @@ class LoginByCode extends Component {
         <LoginNav active='zc'/>
         <div className="form-wrapper">
           <InputText placeholder="手机号"/>
-          <ButtonWithCode placeholder="验证码"/>
+          <ButtonWithCode logicKey='register' placeholder="验证码"/>
           <InputText type="password" placeholder="密码(请输入6位以上的数字或字母)"/>
           <InputText placeholder="输入邀请码(可不填)"/>
           <Button style={{'marginTop': px2rem(30.0)}}>注册</Button>

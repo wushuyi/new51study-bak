@@ -1,4 +1,18 @@
 /*! bulma.io v0.6.0 | MIT License | github.com/jgthms/bulma */
+*,
+*:before,
+*:after {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+* {
+  outline: none;
+}
+
+*[contenteditable] {
+  -webkit-user-select: auto !important;
+}
+
 @-webkit-keyframes spinAround {
   from {
     -webkit-transform: rotate(0deg);

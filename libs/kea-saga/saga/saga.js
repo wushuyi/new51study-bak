@@ -32,7 +32,7 @@ function* manSaga() {
 }
 
 export function* keaSaga() {
-  yield fork(manSaga);
+  yield call(manSaga);
 }
 
 export function startSaga(saga) {

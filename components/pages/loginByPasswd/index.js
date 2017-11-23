@@ -1,15 +1,13 @@
 import {Component} from 'react';
 import PropTypes from 'prop-types';
 import style from './style.scss';
-import InputText from 'components/uis/form/InputText';
+import InputText from 'components/uis/form/InputValue';
 import Button from 'components/uis/form/Button';
-import createButtonWithCode from 'components/uis/form/ButtonWithCode';
 import LoginNav from 'components/auth/LoginNav';
 import Link from 'next/link';
+import MyForm from './form';
 
 import {px2rem} from 'utils';
-
-const ButtonWithCode = createButtonWithCode('loginByCode');
 
 class LoginByCode extends Component {
 

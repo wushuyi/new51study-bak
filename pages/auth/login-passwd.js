@@ -24,9 +24,7 @@ class Index extends React.Component {
 
   static async getInitialProps({isServer, store, req, actions, selectors}) {
     let jquery, props = {};
-    await sleep(3000);
-    console.log('sleep');
-    // store.dispatch(logic.actions.increment(2));
+
     return props;
   }
 

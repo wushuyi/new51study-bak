@@ -2,9 +2,6 @@ import {Component} from 'react';
 import PropTypes from 'prop-types';
 import style from './style.scss';
 import classnames from 'classnames';
-import InputText from 'components/uis/form/InputText/index';
-import Button from 'components/uis/form/Button/index';
-import createButtonWithCode from 'components/uis/form/ButtonWithCode/index';
 import Link from 'next/link';
 
 import {px2rem} from 'utils/index';

@@ -1,14 +1,12 @@
 import {Component} from 'react';
 import PropTypes from 'prop-types';
 import style from './style.scss';
-import InputText from 'components/uis/form/InputText';
+import InputText from 'components/uis/form/InputValue';
 import Button from 'components/uis/form/Button';
-import createButtonWithCode from 'components/uis/form/ButtonWithCode';
+import ButtonWithCode from 'components/uis/form/ButtonWithCode';
 import Link from 'next/link';
 
 import {px2rem} from 'utils';
-
-const ButtonWithCode = createButtonWithCode('loginByCode');
 
 class LoginByCode extends Component {
 
@@ -18,7 +16,7 @@ class LoginByCode extends Component {
         <div className="login-code-title">忘记密码</div>
         <div className="form-wrapper">
           <InputText className='' placeholder="手机号"/>
-          <ButtonWithCode placeholder="验证码"/>
+          <ButtonWithCode logicKey='passwdforget' placeholder="验证码"/>
           <InputText type="password" placeholder="密码(请输入6位以上的数字或字母)"/>
           <InputText type="password" placeholder="确认密码"/>
           <Button style={{'marginTop': px2rem(30.0)}}>完成</Button>

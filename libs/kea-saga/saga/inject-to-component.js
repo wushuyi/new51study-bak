@@ -95,75 +95,75 @@ export default function injectSagasIntoClass(Klass, input, output) {
       this._keaRunningSaga = _keaRunningSaga;
       originalComponentWillMount && originalComponentWillMount.bind(this)();
     };
-  } else {
-    const originalComponentDidMount = Klass.prototype.componentDidMount;
-    Klass.prototype.componentDidMount = function () {
-      if (DEBUG) {
-        console.log('component did mount');
-      }
+  }
 
-      // this === component instance
-      this._keaSagaBase = {};
-      this._keaRunningSaga = null;
+  const originalComponentDidMount = Klass.prototype.componentDidMount;
+  Klass.prototype.componentDidMount = function () {
+    if (DEBUG) {
+      console.log('component did mount');
+    }
 
-      const key = input.key ? input.key(this.props) : null;
-      const path = input.path(key);
+    // this === component instance
+    this._keaSagaBase = {};
+    this._keaRunningSaga = null;
 
-      let sagas = (input.sagas || []).map(saga => {
-        return saga && saga._keaPlugins && saga._keaPlugins.saga && saga.saga ? saga.saga : saga;
+    const key = input.key ? input.key(this.props) : null;
+    const path = input.path(key);
+
+    let sagas = (input.sagas || []).map(saga => {
+      return saga && saga._keaPlugins && saga._keaPlugins.saga && saga.saga ? saga.saga : saga;
+    });
+
+    if (input.start || input.stop || input.takeEvery || input.takeLatest) {
+      const _component = this;
+      _component._keaSagaBase = {
+        start: input.start,
+        stop: input.stop,
+        takeEvery: input.takeEvery,
+        takeLatest: input.takeLatest,
+        workers: input.workers ? Object.assign({}, input.workers) : {},
+        key: key,
+        path: path,
+        props: this.props,
+        get: function* (key) {
+          const {selectors, selector} = getCache(path);
+          return yield select(key ? selectors[key] : selector);
+        },
+        fetch: function* () {
+          let results = {};
+          const keys = Array.isArray(arguments[0]) ? arguments[0] : arguments;
+          for (let i = 0; i < keys.length; i++) {
+            results[keys[i]] = yield _component._keaSagaBase.get(keys[i]);
+          }
+          return results;
+        }
+      };
+
+      let sagaActions = Object.assign({}, connectedActions);
+
+      // inject key to the payload of created actions
+      Object.keys(output.actions || {}).forEach(actionKey => {
+        if (key) {
+          sagaActions[actionKey] = (...args) => {
+            const createdAction = output.actions[actionKey](...args);
+            return Object.assign({}, createdAction, {payload: Object.assign({key: key}, createdAction.payload)});
+          };
+          sagaActions[actionKey].toString = output.actions[actionKey].toString;
+        } else {
+          sagaActions[actionKey] = output.actions[actionKey];
+        }
       });
 
-      if (input.start || input.stop || input.takeEvery || input.takeLatest) {
-        const _component = this;
-        _component._keaSagaBase = {
-          start: input.start,
-          stop: input.stop,
-          takeEvery: input.takeEvery,
-          takeLatest: input.takeLatest,
-          workers: input.workers ? Object.assign({}, input.workers) : {},
-          key: key,
-          path: path,
-          props: this.props,
-          get: function* (key) {
-            const {selectors, selector} = getCache(path);
-            return yield select(key ? selectors[key] : selector);
-          },
-          fetch: function* () {
-            let results = {};
-            const keys = Array.isArray(arguments[0]) ? arguments[0] : arguments;
-            for (let i = 0; i < keys.length; i++) {
-              results[keys[i]] = yield _component._keaSagaBase.get(keys[i]);
-            }
-            return results;
-          }
-        };
+      const saga = createSaga(this._keaSagaBase, {actions: sagaActions});
+      sagas.push(saga);
+    }
 
-        let sagaActions = Object.assign({}, connectedActions);
+    if (sagas.length > 0) {
+      this._keaRunningSaga = startSaga(createCombinedSaga(sagas, path.join('.')));
+    }
 
-        // inject key to the payload of created actions
-        Object.keys(output.actions || {}).forEach(actionKey => {
-          if (key) {
-            sagaActions[actionKey] = (...args) => {
-              const createdAction = output.actions[actionKey](...args);
-              return Object.assign({}, createdAction, {payload: Object.assign({key: key}, createdAction.payload)});
-            };
-            sagaActions[actionKey].toString = output.actions[actionKey].toString;
-          } else {
-            sagaActions[actionKey] = output.actions[actionKey];
-          }
-        });
-
-        const saga = createSaga(this._keaSagaBase, {actions: sagaActions});
-        sagas.push(saga);
-      }
-
-      if (sagas.length > 0) {
-        this._keaRunningSaga = startSaga(createCombinedSaga(sagas, path.join('.')));
-      }
-
-      originalComponentDidMount && originalComponentDidMount.bind(this)();
-    };
-  }
+    originalComponentDidMount && originalComponentDidMount.bind(this)();
+  };
 
   const originalComponentWillReceiveProps = Klass.prototype.componentWillReceiveProps;
   Klass.prototype.componentWillReceiveProps = function (nextProps) {

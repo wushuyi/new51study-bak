@@ -1,0 +1,25 @@
+@import 'libs/hotcss/px2rem.scss';
+
+$whitespacePrefixCls: wyx-whitespace;
+
+.#{$whitespacePrefixCls} {
+  &#{&}-xs {
+    height: px2rem(3);
+  }
+
+  &#{&}-sm {
+    height: px2rem(6);
+  }
+
+  &#{&}-md {
+    height: px2rem(9);
+  }
+
+  &#{&}-lg {
+    height: px2rem(15);
+  }
+
+  &#{&}-xl {
+    height: px2rem(21);
+  }
+}

@@ -27,7 +27,7 @@ export default class Button extends Component {
           }
         }}
       >{children}
-        <style jsx>{style}</style>
+        <style jsx global>{style}</style>
       </button>
     );
   }

@@ -1,59 +1,81 @@
-import {Component} from 'react';
+import React from 'react';
 import style from './style.scss';
 import Button from 'components/uis/form/Button';
-import InputText from 'components/uis/form/InputText';
-import {connect} from 'libs/kea';
-import logic from './logic';
+import InputValue from 'components/uis/form/InputValue';
+import createLogic from './logic';
+import {isBrowser} from 'utils';
+import memoize from 'fast-memoize';
+
+const createComponent = memoize((key) => {
+
+    let ButtonWithCode = class ButtonWithCode extends React.Component {
+        static defaultProps = {
+            buttonText: '获取验证码',
+            timedoutTextTmpl: (countdown) => `重发(${countdown}s)`,
+            onGetCode: (evt) => true,
+            lock: true,
+        };
+
+        render() {
+            const {
+                buttonText,
+                timedoutTextTmpl,
+                onGetCode,
+
+                countdown,
+                lock,
+                dispatch,
+                actions,
+                root,
+
+                onChange,
+                onBlur,
+                className,
+                children,
+
+                ...rest
+            } = this.props;
+            const codeBtnText = countdown ? timedoutTextTmpl(countdown) : buttonText;
+
+            const inputProp = {onChange, onBlur, ...rest};
 
 
-export default (key) => {
+            return (
+                <div className="wapper">
+                    <InputValue type='digit' maxLength={6} {...inputProp}/>
+                    <Button
+                        className="with-code"
+                        disabled={lock}
+                        onClick={(evt) => {
+                            onGetCode(evt) && !lock && actions.buttonTimedout(5);
+                        }}
+                    >{codeBtnText}</Button>
+                    <style jsx>{style}</style>
+                </div>
+            );
+        }
+    };
 
-  @logic(key)
-  class ButtonWithCode extends Component {
+    if (isBrowser) {
+        let logic = createLogic(key);
+        ButtonWithCode = logic(ButtonWithCode);
+    }
+    return ButtonWithCode;
+});
+
+export default class ButtonWithCode extends React.Component {
+
     static defaultProps = {
-      buttonText: '获取验证码',
-      timedoutTextTmpl: (countdown) => `重发(${countdown}s)`,
-      onGetCode: (evt) => true,
+        logicKey: 'defaultKey',
     };
 
     render() {
-      const {
-        buttonText,
-        timedoutTextTmpl,
-        onGetCode,
-
-        countdown,
-        lock,
-        dispatch,
-        actions,
-
-        onChange,
-        onBlur,
-        className,
-        children,
-
-        ...rest
-      } = this.props;
-      const codeBtnText = countdown ? timedoutTextTmpl(countdown) : buttonText;
-
-      const inputProp = {onChange, onBlur, ...rest};
-
-
-      return (
-        <div className="wapper">
-          <InputText {...inputProp}/>
-          <Button
-            className="with-code"
-            disabled={lock}
-            onClick={(evt) => {
-              onGetCode(evt) && !lock && actions.buttonTimedout(5);
-            }}
-          >{codeBtnText}</Button>
-          <style jsx>{style}</style>
-        </div>
-      );
+        let {logicKey, ...restProps} = this.props;
+        const Component = createComponent(logicKey);
+        return (
+            <Component {...restProps}/>
+        );
     }
-  }
-
-  return ButtonWithCode;
 }
+
+
