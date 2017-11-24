@@ -1,6 +1,6 @@
 @import 'libs/hotcss/px2rem.scss';
 
-.button {
+.wyx-auth-button {
   background: #FF4F00;
   border-color: #FF4F00;
   color: #FFFFFF;
@@ -11,9 +11,14 @@
   &:focus:not(:active), &.is-focused:not(:active) {
     box-shadow: none;
   }
+  &.button:active, &.button.is-active,
+  &.button:hover, &.button.is-hovered {
+    border-color: #FF4F00;
+    color: #FFFFFF;
+  }
 }
 
-.button.with-code {
+.wyx-auth-button.with-code {
   position: absolute;
   top: px2rem(10.0);
   right: px2rem(10.0);

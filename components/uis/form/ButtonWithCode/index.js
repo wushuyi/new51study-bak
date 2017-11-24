@@ -3,11 +3,11 @@ import style from './style.scss';
 import Button from 'components/uis/form/Button';
 import InputValue from 'components/uis/form/InputValue';
 import createLogic from './logic';
+import {connect} from 'libs/kea';
 import {isBrowser} from 'utils';
 import memoize from 'fast-memoize';
 
 const createComponent = memoize((key) => {
-
     let ButtonWithCode = class ButtonWithCode extends React.Component {
         static defaultProps = {
             buttonText: '获取验证码',

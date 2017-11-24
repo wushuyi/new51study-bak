@@ -8,46 +8,46 @@ function noop() {
 }
 
 function fixControlledValue(value) {
-    if (typeof value === 'undefined' || value === null) {
-        return '';
-    }
-    return value;
+  if (typeof value === 'undefined' || value === null) {
+    return '';
+  }
+  return value;
 }
 
 
 export default class InputText extends React.Component {
-    static defaultProps = {
-        type: 'text',
-        editable: true,
-        disabled: false,
-        placeholder: '',
-        clear: false,
-        onChange: noop,
-        onBlur: noop,
-        onFocus: noop,
-    };
+  static defaultProps = {
+    prefixCls: 'wyx-input',
+    type: 'text',
+    editable: true,
+    disabled: false,
+    placeholder: '',
+    clear: false,
+    onChange: noop,
+    onBlur: noop,
+    onFocus: noop,
+  };
 
+  inputRef;
 
-    inputRef;
+  render() {
+    const {
+      prefixCls, className, ...restProps,
+    } = this.props;
 
-    render() {
-        const {
-            className, ...restProps,
-        } = this.props;
+    const wrapCls = classnames(
+      prefixCls,
+      className
+    );
 
-        const wrapCls = classnames(
-            'wyx-input',
-            className
-        );
-
-        return (
-            <div>
-                <Input
-                    {...restProps}
-                    className={wrapCls}
-                />
-                <style jsx global>{scss}</style>
-            </div>
-        );
-    }
+    return (
+      <div>
+        <Input
+          {...restProps}
+          className={wrapCls}
+        />
+        <style jsx global>{scss}</style>
+      </div>
+    );
+  }
 }

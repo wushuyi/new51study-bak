@@ -1,21 +1,35 @@
 import {Component} from 'react';
 import style from './style.scss';
+import classnames from 'classnames';
 
 export default class Button extends Component {
+  static defaultProps = {
+    prefixCls: 'wyx-auth-button',
+  };
+
   render() {
     const {
+      prefixCls,
+      className,
+
       onChange,
       onBlur,
-      className,
+
       children,
       styles,
       ...rest
     } = this.props;
 
+    const wrapCls = classnames(
+      prefixCls,
+      'button',
+      className
+    );
+
     return (
       <button
         {...rest}
-        className={`button ${className || ''}`}
+        className={wrapCls}
         onChange={(e) => {
           if (onChange) {
             onChange(e.target.value, e);

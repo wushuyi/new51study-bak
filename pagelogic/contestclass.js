@@ -1,6 +1,6 @@
 import {kea} from 'libs/kea';
 import PropTypes from 'prop-types';
-import {put, race, take, call} from 'redux-saga/effects';
+import {put, race, take, call, all, fork} from 'redux-saga/effects';
 import {delay} from 'redux-saga';
 import request from 'superagent';
 import reduce from 'lodash/reduce';
@@ -23,9 +23,10 @@ export function createUrl(api) {
 
 
 const logic = kea({
-  path: (key) => ['scenes', 'noop'],
+  path: () => ['scenes', 'pages', 'contest-class'],
   actions: () => {
     return {
+      initContestClass: (id) => ({id}),
       Requestframework: (id) => ({id}),
       Successframework: (id, res) => ({id: id, res: res}),
       Failureframework: (id, res) => ({id: id, res: res}),
@@ -49,8 +50,21 @@ const logic = kea({
     framework: [{}, PropTypes.any, {
       [actions.Successframework]: (state, payload) => {
         let {id, res} = payload;
-        state[id] = res
-        console.log('id',id);
+        state[id] = res;
+        return state;
+      }
+    }],
+    one: [{}, PropTypes.any, {
+      [actions.Successone]: (state, payload) => {
+        let {id, res} = payload;
+        state[id] = res;
+        return state;
+      }
+    }],
+    two: [{}, PropTypes.any, {
+      [actions.Successtwo]: (state, payload) => {
+        let {id, res} = payload;
+        state[id] = res;
         return state;
       }
     }],
@@ -71,17 +85,30 @@ const logic = kea({
 
   takeEvery: ({actions, workers}) => ({
     [actions.noop]: workers.noop,
+    [actions.initContestClass]: workers.initContestClass,
     [actions.Requestframework]: workers.getFramework,
+    [actions.Requestone]: workers.getOne,
+    [actions.Requesttwo]: workers.getTwo,
   }),
 
   workers: {
     noop: function* () {
     },
+    initContestClass: function* (action) {
+      let {actions, workers} = this;
+      yield all([
+        call(workers.getFramework, action),
+        call(workers.getOne, action),
+        call(workers.getTwo, action)
+      ]);
+      yield call(console.log, 'all ok!');
+    },
     getFramework: function* (action) {
+
       let {id} = action.payload;
       let {actions} = this;
-      let requestURL = createUrl(evaluatesFrameworkShare(id));
       yield call(delay, 2000);
+      let requestURL = createUrl(evaluatesFrameworkShare(id));
       try {
         let res = yield call(() => {
           return request.get(requestURL)
@@ -104,6 +131,65 @@ const logic = kea({
       } finally {
         // console.log('ok');
       }
+      yield call(console.log, 'getFramework');
+    },
+    getOne: function* (action) {
+      let {id} = action.payload;
+      let {actions} = this;
+      yield call(delay, 1000);
+      let requestURL = createUrl(evaluatesOneShare(id));
+      try {
+        let res = yield call(() => {
+          return request.get(requestURL)
+            .query(getQueryConfig);
+        });
+        if (res.status === 200) {
+          switch (res.body.code) {
+            case 200:
+              yield put(actions.Successone(id, res.body.data));
+              break;
+            case 1444:
+              console.log('need auth!');
+              break;
+            default:
+              console.log('未知错误!');
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        // console.log('ok');
+      }
+      yield call(console.log, 'getOne');
+    },
+    getTwo: function* (action) {
+      let {id} = action.payload;
+      let {actions} = this;
+      yield call(delay, 2000);
+      let requestURL = createUrl(evaluatesTwoShare(id));
+      try {
+        let res = yield call(() => {
+          return request.get(requestURL)
+            .query(getQueryConfig);
+        });
+        if (res.status === 200) {
+          switch (res.body.code) {
+            case 200:
+              yield put(actions.Successtwo(id, res.body.data));
+              break;
+            case 1444:
+              console.log('need auth!');
+              break;
+            default:
+              console.log('未知错误!');
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        // console.log('ok');
+      }
+      yield call(console.log, 'getTwo');
     },
   }
 });

@@ -22,7 +22,6 @@ export default {
   afterReduxStore: (options, store) => {
     store.sagaTask = options._sagaMiddleware.run(keaSaga)
     store._sagaMiddleware = options._sagaMiddleware
-
   },
 
   isActive: (input) => {

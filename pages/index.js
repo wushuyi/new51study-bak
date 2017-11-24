@@ -2,40 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Layout from 'components/layout/default';
 import {withRedux} from 'store';
-import logic from 'pagelogic/index';
+import logic from 'pagelogic/noop';
 import {connect} from 'libs/kea';
 import {isBrowser} from 'utils';
-import LoginByCode from 'components/pages/loginByCode';
-
-async function getLibs() {
-  let libs = {};
-  if (isBrowser) {
-    try {
-      let esMoment = await import('libs/momentzhcn');
-      libs.moment = esMoment.default;
-    } catch (err) {
-
-    }
-
-  }
-  return libs;
-}
+import Link from 'next/link';
 
 @connect({
   actions: [
-    logic, [
-      'increment',
-      'decrement',
-      'title'
-    ]
+    logic, []
   ],
-  props: [
-    logic, [
-      'counter',
-      'doubleCounter',
-      'title',
-    ]
-  ]
 })
 class Index extends React.Component {
   static childContextTypes = {
@@ -49,7 +24,7 @@ class Index extends React.Component {
 
   static async getInitialProps({isServer, store, req, actions, selectors}) {
     let jquery, props = {};
-    store.dispatch(logic.actions.increment(2));
+    // store.dispatch(logic.actions.increment(2));
     return props;
   }
 
@@ -61,24 +36,17 @@ class Index extends React.Component {
   }
 
   async componentDidMount() {
-    this.mounted = true;
-    let libs = {};
-    if (this.props.libs) {
-      libs = this.props.libs;
-    } else if (this.mounted) {
-      libs = await getLibs();
-    }
-    console.log('componentDidMount', libs);
-    window.libs = libs;
+
   }
 
 
   render() {
-    let {counter, doubleCounter, title} = this.props;
-    let {increment, decrement} = this.actions;
+
     return (
       <Layout>
-        <LoginByCode/>
+        <Link href='/contests/contest-class?id=31' as='/contests/contest-class/31'>
+          <div>contest-class</div>
+        </Link>
       </Layout>
     );
   }

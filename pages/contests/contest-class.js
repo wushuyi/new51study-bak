@@ -5,12 +5,13 @@ import {withRedux} from 'store';
 import logic from 'pagelogic/contestclass';
 import {connect} from 'libs/kea';
 import {isBrowser} from 'utils';
-import LoginByCode from 'components/pages/loginByCode';
+
+// import LoginByCode from 'components/pages/loginByCode';
 
 @connect({
   actions: [
     logic, [
-      // 'increment',
+      'initContestClass',
       // 'decrement',
       // 'increment_if_odd',
       // 'increment_async',
@@ -35,10 +36,15 @@ class Index extends React.Component {
     this.libs = {};
   }
 
-  static async getInitialProps({isServer, store, req, actions, selectors, query}) {
+  static async getInitialProps(ctx) {
+    const {err, req, res, pathname, query, asPath, isServer, store} = ctx;
+    if (isServer) {
+      // res.cookie('test', 'hello');
+      // console.log(req.cookies);
+    }
     let jquery, props = {};
-    store.dispatch(logic.actions.Requestframework(31));
-    console.log(query);
+    store.dispatch(logic.actions.initContestClass(31));
+    // await store.sagaTask.done;
     return props;
   }
 
@@ -50,8 +56,10 @@ class Index extends React.Component {
   }
 
   async componentDidMount() {
-    console.log(this.props);
+    // console.log(this.props);
     let {actions} = this.props;
+    // await actions.initContestClass(31);
+    // console.log(actions);
     // actions.start();
   }
 

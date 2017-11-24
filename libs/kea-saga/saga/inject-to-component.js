@@ -9,6 +9,7 @@ import createCombinedSaga from './create-combined';
 import {getCache} from 'libs/kea';
 
 const DEBUG = false;
+export const isBrowser = typeof window !== 'undefined';
 
 export default function injectSagasIntoClass(Klass, input, output) {
   const connectedActions = output.connected ? output.connected.actions : {};
@@ -19,14 +20,14 @@ export default function injectSagasIntoClass(Klass, input, output) {
   Klass.prototype._injectedKeaSaga = true;
 
   if (Klass.getInitialProps) {
-    let _keaSagaBase = {};
-    let _keaRunningSaga = null;
-
     const originalGetInitialProps = Klass.getInitialProps;
     Klass.getInitialProps = async function (ctx) {
       if (DEBUG) {
         console.log('component getInitialProps');
       }
+
+      let _keaSagaBase = {};
+      let _keaRunningSaga = null;
 
 
       // this === component instance
@@ -87,13 +88,6 @@ export default function injectSagasIntoClass(Klass, input, output) {
       }
 
       await originalGetInitialProps(ctx);
-    };
-    const originalComponentWillMount = Klass.prototype.componentWillMount;
-    Klass.prototype.componentWillMount = function () {
-      const _component = this;
-      this._keaSagaBase = _keaSagaBase;
-      this._keaRunningSaga = _keaRunningSaga;
-      originalComponentWillMount && originalComponentWillMount.bind(this)();
     };
   }
 

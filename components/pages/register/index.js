@@ -23,7 +23,7 @@ class LoginByCode extends Component {
           <Button style={{'marginTop': px2rem(30.0)}}>注册</Button>
         </div>
         <div className="is-clearfix link-wapper">
-          <Link href="./login-code">
+          <Link href="./login-code" prefetch>
             <a href="./login-code" className="is-pulled-right link">验证码快捷登录</a>
           </Link>
         </div>

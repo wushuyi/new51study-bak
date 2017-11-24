@@ -24,12 +24,22 @@ export default class LoginNav extends Component {
 
     return (
       <div className="wapper">
-        <Link href='./login-passwd'>
+        {active === 'zc' ? (
+          <Link href='./login-passwd' prefetch>
+            <a className={dlClass}>登录</a>
+          </Link>
+        ) : (
           <a className={dlClass}>登录</a>
-        </Link>
-        <Link href='./register'>
+        )}
+
+        {active === 'dl' ? (
+          <Link href='./register' prefetch>
+            <a className={zcClass}>注册</a>
+          </Link>
+        ) : (
           <a className={zcClass}>注册</a>
-        </Link>
+        )}
+
         <style jsx>{style}</style>
       </div>
     );

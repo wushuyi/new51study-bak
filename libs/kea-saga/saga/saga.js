@@ -1,5 +1,5 @@
 import {call, take, cancel, spawn, fork, all} from 'redux-saga/effects';
-import {eventChannel} from 'redux-saga';
+import {eventChannel, END} from 'redux-saga';
 
 let emitter;
 let cancelCounter = 1;
@@ -24,9 +24,12 @@ function* manSaga() {
     }
     if (cancelSaga) {
       yield cancel(toCancel[counter]);
+      toCancel[counter] = null;
     }
+
     if (!isBrowser) {
       lock = false;
+      toCancel[counter] = null;
     }
   }
 }
