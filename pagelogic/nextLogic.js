@@ -7,7 +7,7 @@ import {isServer} from 'utils/runEnv'
 export default KeaContext => {
   const {kea} = KeaContext;
   return kea({
-    path: (key) => ['scenes', 'pages', 'index'],
+    path: (key) => ['scenes', 'pages', 'next'],
     actions: () => ({
       noop: () => ({}),
       title: (text) => ({text}),

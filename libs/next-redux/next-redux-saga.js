@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {END} from 'redux-saga';
 import {getKeaSaga} from 'libs/next-kea-saga'
+import forEach from 'lodash/forEach';
 
 function withReduxSaga(BaseComponent) {
   class WrappedComponent extends Component {
@@ -12,11 +13,20 @@ function withReduxSaga(BaseComponent) {
         props = await BaseComponent.getInitialProps(ctx);
       }
 
-      if (isServer) {
-        const mainSaga = getKeaSaga(KeaContext.getCache);
-        mainSaga.endSaga();
-        store.dispatch(END);
-        await store.sagaTask.done;
+      const mainSaga = getKeaSaga(KeaContext.getCache);
+      mainSaga.endSaga();
+      store.dispatch(END);
+      await store.sagaTask.done;
+      if(!isServer){
+        store.sagaTask = store._sagaMiddleware.run(mainSaga.keaSaga)
+        let RunSagas = getCache('global', 'RunSagas');
+        forEach(RunSagas, function(value, key) {
+          if(value){
+            mainSaga.startSaga(value, key);
+          }else{
+            delete RunSagas[key]
+          }
+        });
       }
 
       return props;

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRedux} from 'store'
-import createLogic from 'pagelogic/indexLogic'
+import createLogic from 'pagelogic/nextLogic'
 import Head from 'next/head';
 
 // const Fragment = props => props.children;
@@ -112,9 +112,8 @@ class Page extends React.Component {
       window.getCache = getCache;
     }
     store.dispatch(actions.title('ok'));
-    // console.log(actions.initPage('hello'));
-    // console.log('run getInitialProps!');
-    store.dispatch(actions.initPage('index'));
+
+    store.dispatch(actions.initPage('next'));
     return {name: {sdafsad: 'sadfsadf'}}
   }
 
@@ -138,10 +137,10 @@ class Page extends React.Component {
     return (
       <Fragment>
         <Head>
-          <title>index-异步渲染demo</title>
+          <title>next-异步渲染demo</title>
         </Head>
-        <Link href='./next' prefetch>
-          <a href='./next'>next</a>
+        <Link href='./index' prefetch>
+          <a href='./index'>index</a>
         </Link>
         <div className="hello">
           {title}

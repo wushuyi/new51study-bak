@@ -37,7 +37,7 @@ export default function create(cache) {
       emitter({startSaga: true, saga, sagaPath})
       let RunSagas = getCache('global', 'RunSagas')
       if (!RunSagas) {
-        RunSagas = []
+        RunSagas = {}
         setCache('global', {RunSagas})
       }
       RunSagas[sagaPath] = saga

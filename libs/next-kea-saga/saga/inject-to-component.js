@@ -184,7 +184,7 @@ export default function injectSagasIntoClass(Klass, input, output, cache) {
       console.log('component will unmount')
     }
     if (this._keaRunningSagaPath) {
-      console.log('run!aa');
+      // console.log('run!_keaRunningSagaPath', this._keaRunningSagaPath);
       mainSaga.cancelSaga(this._keaRunningSagaPath)
     }
 
