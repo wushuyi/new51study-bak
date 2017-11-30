@@ -30,7 +30,7 @@ const logic = kea({
 
   start: function* () {
     // yield call(delay, 6000);
-    // console.log('ok');
+    console.log('ok');
   },
 
   takeEvery: ({actions, workers}) => ({

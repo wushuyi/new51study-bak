@@ -1,9 +1,10 @@
-import {getStore} from 'libs/kea';
 import {default as baseWithRedux} from "libs/next-redux/next-redux-wrapper";
 import withReduxSaga from 'libs/next-redux/next-redux-saga'
 
-export function configureStore(initialState) {
-  const store = getStore({
+export function configureStore(initialState, options) {
+  const {KeaContext} = options;
+  // console.log(initialState)
+  const store = KeaContext.getStore({
     preloadedState: initialState,
   });
 
@@ -11,6 +12,6 @@ export function configureStore(initialState) {
 }
 
 
-export function withRedux(BaseComponent) {
-  return baseWithRedux(configureStore)(withReduxSaga(BaseComponent));
+export function withRedux(BaseComponent, createLogic) {
+  return baseWithRedux(configureStore)(withReduxSaga(BaseComponent), createLogic);
 }

@@ -1,22 +1,20 @@
-var React = require('react');
-var ReactRedux = require('react-redux');
-import 'libs/kea-saga/install'
+import React from 'react'
+import PropTypes from 'prop-types';
+import {connect, Provider} from 'react-redux'
+import getKea from 'utils/getKea'
 
-var connect = ReactRedux.connect;
-var Provider = ReactRedux.Provider;
-
-var _Promise;
-var _debug = false;
-var skipMerge = ['initialState', 'initialProps', 'isServer', 'store'];
-var DEFAULT_KEY = '__NEXT_REDUX_STORE__';
-var isBrowser = typeof window !== 'undefined';
+let _Promise;
+let _debug = false;
+let skipMerge = ['initialState', 'initialProps', 'isServer', 'store'];
+const DEFAULT_KEY = '__NEXT_REDUX_STORE__';
+const isBrowser = typeof window !== 'undefined';
 
 function initStore(makeStore, initialState, context, config) {
-  var req = context.req;
-  var isServer = !!req && !isBrowser;
-  var storeKey = config.storeKey;
+  let req = context.req;
+  let isServer = !!req && !isBrowser;
+  let storeKey = config.storeKey;
 
-  var options = Object.assign({}, config, {
+  let options = Object.assign({}, config, {
     isServer: isServer,
     req: req,
     res: context.res,
@@ -42,15 +40,17 @@ function initStore(makeStore, initialState, context, config) {
 
 }
 
-module.exports = function(createStore) {
+module.exports = function (createStore) {
+  const KeaContext = getKea();
 
-  var config = {storeKey: DEFAULT_KEY, debug: _debug};
-  var connectArgs;
+
+  let config = {storeKey: DEFAULT_KEY, debug: _debug, KeaContext};
+  let connectArgs;
 
   // Ensure backwards compatibility, the config object should come last after connect arguments.
   if (typeof createStore === 'object') {
 
-    var wrappedConfig = createStore;
+    let wrappedConfig = createStore;
 
     if (!({}).hasOwnProperty.call(wrappedConfig, 'createStore')) {
       throw new Error('Missing createStore function');
@@ -78,19 +78,56 @@ module.exports = function(createStore) {
     connectArgs = [].slice.call(arguments).slice(1);
   }
 
-  return function(Cmp) {
-
+  return function (Cmp, createLogic) {
+    let WrappedKea, withLogic;
     // Since provide should always be after connect we connect here
-    var ConnectedCmp = (connect.apply(null, connectArgs))(Cmp);
+    let ConnectedCmp;
+    WrappedKea = class newWrappedKea extends React.Component {
+      static childContextTypes = {
+        KeaContext: PropTypes.any,
+      };
+      getChildContext = function () {
+        return {
+          KeaContext: KeaContext,
+        };
+      };
+
+      render() {
+        return this.props.children
+      }
+    }
+    if (createLogic) {
+      withLogic = createLogic(KeaContext);
+      const {logic, mainLogic} = withLogic;
+      ConnectedCmp = logic(Cmp)
+      if (mainLogic) {
+        WrappedKea = class newWrappedKea extends React.Component {
+          static childContextTypes = {
+            KeaContext: PropTypes.any,
+            mainLogic: PropTypes.any,
+          };
+          getChildContext = function () {
+            return {
+              KeaContext: KeaContext,
+              mainLogic: mainLogic
+            };
+          };
+
+          render() {
+            return this.props.children
+          }
+        }
+      }
+    }
 
     function WrappedCmp(props) {
 
       props = props || {};
 
-      var initialState = props.initialState || {};
-      var initialProps = props.initialProps || {};
-      var hasStore = props.store && props.store.dispatch && props.store.getState;
-      var store = hasStore
+      let initialState = props.initialState || {};
+      let initialProps = props.initialProps || {};
+      let hasStore = props.store && props.store.dispatch && props.store.getState;
+      let store = hasStore
         ? props.store
         : initStore(createStore, initialState, {}, config); // client case, no store but has initialState
 
@@ -104,28 +141,43 @@ module.exports = function(createStore) {
       if (config.debug) console.log(Cmp.name, '- 4. WrappedCmp.render', (hasStore ? 'picked up existing one,' : 'created new store with'), 'initialState', initialState);
 
       // Fix for _document
-      var mergedProps = {};
-      Object.keys(props).forEach(function(p) { if (!~skipMerge.indexOf(p)) mergedProps[p] = props[p]; });
-      Object.keys(initialProps || {}).forEach(function(p) { mergedProps[p] = initialProps[p]; });
+      let mergedProps = {};
+      Object.keys(props).forEach(function (p) {
+        if (!~skipMerge.indexOf(p)) mergedProps[p] = props[p];
+      });
+      Object.keys(initialProps || {}).forEach(function (p) {
+        mergedProps[p] = initialProps[p];
+      });
 
-      return React.createElement( //FIXME This will create double Provider for _document case
-        Provider,
-        {store: store},
-        React.createElement(ConnectedCmp, mergedProps)
+
+      return React.createElement(
+        WrappedKea,
+        {},
+        React.createElement( //FIXME This will create double Provider for _document case
+          Provider,
+          {store: store},
+          React.createElement(ConnectedCmp, mergedProps)
+        )
       );
 
     }
 
-    WrappedCmp.getInitialProps = function(ctx) {
+    WrappedCmp.getInitialProps = function (ctx) {
 
-      return new _Promise(function(res) {
+      return new _Promise(function (res) {
 
         ctx = ctx || {};
         if (config.debug) console.log(Cmp.name, '- 1. WrappedCmp.getInitialProps wrapper', (ctx.req && ctx.req._store ? 'takes the req store' : 'creates the store'));
         ctx.isServer = !!ctx.req;
-        ctx.store = initStore(createStore, undefined /** initialState **/, {req: ctx.req, query: ctx.query, res: ctx.res}, config);
+        ctx.store = initStore(createStore, undefined /** initialState **/, {
+          req: ctx.req,
+          query: ctx.query,
+          res: ctx.res
+        }, config);
+        ctx.KeaContext = KeaContext;
+        ctx.withLogic = withLogic;
 
-
+        // console.log(Object.keys())
 
         res(_Promise.all([
           ctx.isServer,
@@ -134,7 +186,9 @@ module.exports = function(createStore) {
           Cmp.getInitialProps ? Cmp.getInitialProps.call(Cmp, ctx) : {}
         ]));
 
-      }).then(function(arr) {
+      }).then(function (arr) {
+
+        // console.log(arr[3], 'arr[3]');
 
         if (config.debug) console.log(Cmp.name, '- 3. WrappedCmp.getInitialProps has store state', arr[1].getState());
 
@@ -142,7 +196,7 @@ module.exports = function(createStore) {
           isServer: arr[0],
           store: arr[1],
           initialState: arr[1].getState(),
-          initialProps: arr[3]
+          initialProps: arr[3],
         };
 
       });
@@ -155,11 +209,11 @@ module.exports = function(createStore) {
 
 };
 
-module.exports.setPromise = function(Promise) {
+module.exports.setPromise = function (Promise) {
   _Promise = Promise;
 };
 
-module.exports.setDebug = function(debug) {
+module.exports.setDebug = function (debug) {
   _debug = debug;
 };
 
