@@ -5,8 +5,8 @@ import {select} from 'redux-saga/effects'
 import createSaga from './create-saga'
 import createCombinedSaga from './create-combined'
 import createSagas from './saga'
-import {getCache} from "../../kea";
-import {startSaga} from "../../kea-saga/saga/saga";
+import {getCache} from "../../next-kea";
+import {startSaga} from "../../next-kea-saga/saga/saga";
 
 // import { getCache } from 'kea'
 

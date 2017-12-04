@@ -1,8 +1,8 @@
-import {kea} from "../libs/kea";
 import PropTypes from 'prop-types';
 import {put, race, take, call} from 'redux-saga/effects';
 import {delay} from 'redux-saga';
 import {isServer} from 'utils/runEnv'
+import request from 'superagent';
 
 export default KeaContext => {
   const {kea} = KeaContext;
@@ -12,6 +12,7 @@ export default KeaContext => {
       noop: () => ({}),
       title: (text) => ({text}),
       initPage: (title) => ({title}),
+      asyncData: (json) => ({json}),
     }),
 
     reducers: ({actions}) => ({
@@ -21,7 +22,10 @@ export default KeaContext => {
       }],
       title: ['ok', PropTypes.string, {
         [actions.title]: (state, payload) => payload.text
-      }]
+      }],
+      data: [{}, PropTypes.any, {
+        [actions.asyncData]: (state, payload) => payload.json
+      }],
     }),
 
     selectors: ({selectors}) => ({
@@ -53,10 +57,15 @@ export default KeaContext => {
       noop: function* () {
       },
       initPage: function* (action) {
-
         const {actions} = this;
         const {title} = action.payload;
-        yield call(delay, 2000);
+        let res = yield call(() => {
+          return request.get('http://localhost:8080/temp/es6/package.json');
+        });
+        yield put(actions.asyncData(res.body));
+
+
+        // yield call(delay, 1000);
         // console.log('initPage!');
         yield put(actions.title(title))
         // console.log(action);

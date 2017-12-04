@@ -10,8 +10,8 @@ const app = next({dev});
 const handler = routes.getRequestHandler(app);
 
 const server = express();
-server.use(cookieParser());
-server.use(compression());
+// server.use(cookieParser());
+// server.use(compression());
 
 app.prepare()
     .then(() => {

@@ -40,11 +40,57 @@ function initStore(makeStore, initialState, context, config) {
 
 }
 
+function createKeaWapper(KeaContext, createLogic, Cmp) {
+  let WrappedKea, ConnectedCmp, withLogic;
+  WrappedKea = class newWrappedKea extends React.Component {
+    static childContextTypes = {
+      KeaContext: PropTypes.any,
+    };
+    getChildContext = function () {
+      return {
+        KeaContext: KeaContext,
+      };
+    };
+
+    render() {
+      return this.props.children
+    }
+  }
+  if (createLogic) {
+    withLogic = createLogic(KeaContext);
+    const {logic, mainLogic} = withLogic;
+    ConnectedCmp = logic(Cmp)
+    if (mainLogic) {
+      WrappedKea = class newWrappedKea extends React.Component {
+        static childContextTypes = {
+          KeaContext: PropTypes.any,
+          mainLogic: PropTypes.any,
+        };
+        getChildContext = function () {
+          return {
+            KeaContext: KeaContext,
+            mainLogic: mainLogic
+          };
+        };
+
+        render() {
+          return this.props.children
+        }
+      }
+    }
+  }
+
+  return {
+    WrappedKea,
+    ConnectedCmp,
+    withLogic
+  }
+}
+
 module.exports = function (createStore) {
-  const KeaContext = getKea();
 
 
-  let config = {storeKey: DEFAULT_KEY, debug: _debug, KeaContext};
+  let config = {storeKey: DEFAULT_KEY, debug: _debug};
   let connectArgs;
 
   // Ensure backwards compatibility, the config object should come last after connect arguments.
@@ -78,49 +124,23 @@ module.exports = function (createStore) {
     connectArgs = [].slice.call(arguments).slice(1);
   }
 
-  return function (Cmp, createLogic) {
-    let WrappedKea, withLogic;
+  return function (createCmp, createLogic) {
+    let WrappedKea, withLogic, KeaContext;
     // Since provide should always be after connect we connect here
-    let ConnectedCmp;
-    WrappedKea = class newWrappedKea extends React.Component {
-      static childContextTypes = {
-        KeaContext: PropTypes.any,
-      };
-      getChildContext = function () {
-        return {
-          KeaContext: KeaContext,
-        };
-      };
+    let ConnectedCmp, Cmp;
 
-      render() {
-        return this.props.children
-      }
-    }
-    if (createLogic) {
-      withLogic = createLogic(KeaContext);
-      const {logic, mainLogic} = withLogic;
-      ConnectedCmp = logic(Cmp)
-      if (mainLogic) {
-        WrappedKea = class newWrappedKea extends React.Component {
-          static childContextTypes = {
-            KeaContext: PropTypes.any,
-            mainLogic: PropTypes.any,
-          };
-          getChildContext = function () {
-            return {
-              KeaContext: KeaContext,
-              mainLogic: mainLogic
-            };
-          };
-
-          render() {
-            return this.props.children
-          }
-        }
-      }
-    }
 
     function WrappedCmp(props) {
+      if (!KeaContext) {
+        Cmp = createCmp();
+        KeaContext = getKea();
+        config.KeaContext = KeaContext;
+        const keawapper = createKeaWapper(KeaContext, createLogic, Cmp)
+        WrappedKea = keawapper.WrappedKea;
+        ConnectedCmp = keawapper.ConnectedCmp;
+        withLogic = keawapper.withLogic;
+      }
+
 
       props = props || {};
 
@@ -163,6 +183,15 @@ module.exports = function (createStore) {
     }
 
     WrappedCmp.getInitialProps = function (ctx) {
+      KeaContext = getKea();
+      Cmp = createCmp();
+      Cmp.prototype._injectedKeaSaga = false
+      config.KeaContext = KeaContext;
+      const keawapper = createKeaWapper(KeaContext, createLogic, Cmp)
+
+      WrappedKea = keawapper.WrappedKea;
+      ConnectedCmp = keawapper.ConnectedCmp;
+      withLogic = keawapper.withLogic;
 
       return new _Promise(function (res) {
 

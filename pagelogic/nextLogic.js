@@ -1,4 +1,3 @@
-import {kea} from "../libs/kea";
 import PropTypes from 'prop-types';
 import {put, race, take, call} from 'redux-saga/effects';
 import {delay} from 'redux-saga';
@@ -56,7 +55,7 @@ export default KeaContext => {
 
         const {actions} = this;
         const {title} = action.payload;
-        yield call(delay, 2000);
+        // yield call(delay, 2000);
         // console.log('initPage!');
         yield put(actions.title(title))
         // console.log(action);
